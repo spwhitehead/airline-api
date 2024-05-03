@@ -34,19 +34,19 @@ def load_json_data(filename: str) -> Dict[str, Company]:
 airlines: dict[str, Company] = load_json_data("airlines.json")
 
 
-@app.get("/airline")
+@app.get("/")
 async def list_airline_name() -> list:
     return airlines.keys()
 
 
-@app.get("/{airline_name}/flights")
+@app.get("/{airline_name}")
 async def list_flights(airline_name: str) -> list:
     if airline_name in airlines:
             return airlines[airline_name].flights
     raise HTTPException(status_code=404, detail=f"No flights found for {airline_name}.")
 
  
-@app.get("/{airline_name}/{flight_num}/flight_data")
+@app.get("/{airline_name}/{flight_num}")
 async def flight_data(airline_name: str, flight_num: str) -> FlightData:
     if airline_name in airlines:
         for flight in airlines[airline_name].flights:
@@ -54,7 +54,7 @@ async def flight_data(airline_name: str, flight_num: str) -> FlightData:
                 return flight
         raise HTTPException(status_code=404, detail="No flights found")
 
-@app.put("/{airline_name}/{flight_num}/flight_data")
+@app.put("/{airline_name}/{flight_num}")
 async def update_flight_data(airline_name: str, flight_num: str, updated_flight: FlightData):
     if airline_name in airlines:
         for flight in airlines[airline_name].flights:
@@ -64,7 +64,6 @@ async def update_flight_data(airline_name: str, flight_num: str, updated_flight:
                 flight.estimated_flight_duration = updated_flight.estimated_flight_duration
                 return "Flight data updated successfully"
         raise HTTPException(status_code=404, detail="No flights found.")
-
 
 @app.post("/{airline_name}")
 async def create_flight(airline_name: str, new_flight: FlightData):
